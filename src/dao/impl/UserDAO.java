@@ -19,12 +19,15 @@ public class UserDAO implements IUserDAO {
     private static final String SELECT_USER_BY_ID = "select id,name,email,country from users where id = ?;";
     private static final String SELECT_ALL_USER = "select * from users;";
     private static final String DELETE_USER_SQL = "delete from users where id = ?;";
+    private static final String DELETE_USER_PRO = "call delete_user(?)";
     private static final String UPDATE_USER_SQL = "update users set name=?, email = ?, country=? where id=?;";
     private static final String SEARCH_BY_COUNTRY = "select * from users where country like ?;";
     private static final String SORT_BY_NAME = "select * from users order by name";
     private static final String GET_USER_BY_ID = "call get_user_by_id(?)";
     private static final String INSERT_USER = "call insert_user(?,?,?)";
     private static final String selectAll = "call selectAll()";
+    private static final String UPDATE_USER_PRO = "call update_user(?,?,?,?)";
+
 
     protected Connection getConnection() {
         Connection connection = null;
@@ -109,7 +112,8 @@ public class UserDAO implements IUserDAO {
     public boolean deleteUser(int id) throws SQLException {
         boolean rowDeleted;
         try (Connection connection = getConnection();
-             PreparedStatement statement = (PreparedStatement) connection.prepareStatement(DELETE_USER_SQL);
+//             PreparedStatement statement = (PreparedStatement) connection.prepareStatement(DELETE_USER_SQL);
+             CallableStatement statement = connection.prepareCall(DELETE_USER_PRO);
         ) {
             statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;
@@ -121,7 +125,8 @@ public class UserDAO implements IUserDAO {
     public boolean updateUser(User user) throws SQLException {
         boolean rowUpdate;
         try (Connection connection = getConnection();
-             PreparedStatement statement = (PreparedStatement) connection.prepareStatement(UPDATE_USER_SQL);
+//             PreparedStatement statement = (PreparedStatement) connection.prepareStatement(UPDATE_USER_SQL);
+             CallableStatement statement = connection.prepareCall(UPDATE_USER_PRO);
         ) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
