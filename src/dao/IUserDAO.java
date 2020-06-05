@@ -16,5 +16,6 @@ public interface IUserDAO {
     User get_user_by_id(int user_id) throws SQLException;
     void insert_user_store(String name, String email, String country) throws SQLException;
     void insert_update_without_tran() throws SQLException;
+    void insert_update_with_tran() throws SQLException;
 
 }

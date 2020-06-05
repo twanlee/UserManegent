@@ -51,7 +51,6 @@ public class UserDAO implements IUserDAO {
     private static final String SQL_UPDATE = "UPDATE EMPLOYEE SET SALARY=? WHERE NAME=?";
 
 
-
     protected Connection getConnection() {
         Connection connection = null;
         try {
@@ -204,13 +203,13 @@ public class UserDAO implements IUserDAO {
         Connection connection = getConnection();
         CallableStatement statement = connection.prepareCall(GET_USER_BY_ID);
 
-        statement.setInt(1,user_id);
+        statement.setInt(1, user_id);
         ResultSet resultSet = statement.executeQuery();
-        while (resultSet.next()){
+        while (resultSet.next()) {
             String name = resultSet.getString("name");
             String email = resultSet.getString("email");
             String country = resultSet.getString("country");
-            user = new User(user_id,name,email,country);
+            user = new User(user_id, name, email, country);
         }
 
 
@@ -218,18 +217,18 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public void insert_user_store(String name,String email,String country) throws SQLException {
+    public void insert_user_store(String name, String email, String country) throws SQLException {
         Connection connection = getConnection();
         CallableStatement statement = connection.prepareCall(INSERT_USER);
-        statement.setString(1,name);
-        statement.setString(2,email);
-        statement.setString(3,country);
+        statement.setString(1, name);
+        statement.setString(2, email);
+        statement.setString(3, country);
 
         statement.executeUpdate();
     }
 
     @Override
-    public void insert_update_without_tran() throws SQLException{
+    public void insert_update_without_tran() throws SQLException {
         Connection connection = getConnection();
         Statement statement = connection.createStatement();
         PreparedStatement psInsert = (PreparedStatement) connection.prepareStatement(SQL_INSERT);
@@ -238,20 +237,68 @@ public class UserDAO implements IUserDAO {
         statement.execute(SQL_TABLE_DROP);
         statement.execute(SQL_TABLE_CREATE);
 
-        psInsert.setString(1,"Tuấn");
-        psInsert.setBigDecimal(2,new BigDecimal(10));
-        psInsert.setTimestamp(3,Timestamp.valueOf(LocalDateTime.now()));
+        psInsert.setString(1, "Tuấn");
+        psInsert.setBigDecimal(2, new BigDecimal(10));
+        psInsert.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
         psInsert.execute();
-        psInsert.setString(1,"Trump");
-        psInsert.setBigDecimal(2,new BigDecimal(9));
-        psInsert.setTimestamp(3,Timestamp.valueOf(LocalDateTime.now()));
+        psInsert.setString(1, "Trump");
+        psInsert.setBigDecimal(2, new BigDecimal(9));
+        psInsert.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
         psInsert.execute();
 
-        psUpdate.setString(2,"Tuấn");
+        psUpdate.setString(2, "Tuấn");
         psUpdate.execute();
 
 
     }
+
+    @Override
+    public void insert_update_with_tran() throws SQLException {
+        try (Connection conn = getConnection();
+
+             Statement statement = conn.createStatement();
+
+             PreparedStatement psInsert = (PreparedStatement) conn.prepareStatement(SQL_INSERT);
+
+             PreparedStatement psUpdate = (PreparedStatement) conn.prepareStatement(SQL_UPDATE)) {
+
+            statement.execute(SQL_TABLE_DROP);
+
+            statement.execute(SQL_TABLE_CREATE);
+
+
+            conn.setAutoCommit(false);
+
+
+            psInsert.setString(1, "Quynh");
+
+            psInsert.setBigDecimal(2, new BigDecimal(10));
+
+            psInsert.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+
+            psInsert.execute();
+
+
+            psInsert.setString(1, "Ngan");
+
+            psInsert.setBigDecimal(2, new BigDecimal(20));
+
+            psInsert.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+
+            psInsert.execute();
+            psUpdate.setBigDecimal(1, new BigDecimal(999.99));
+            psUpdate.setString(2, "Quynh");
+
+            psUpdate.execute();
+            conn.commit();
+            conn.setAutoCommit(true);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
