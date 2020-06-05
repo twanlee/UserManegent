@@ -124,6 +124,13 @@ public class Servlet extends HttpServlet {
                     e.printStackTrace();
                 }
                 break;
+            case "test-without-tran":
+                try {
+                    test_without_tran(request,response);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
             default:
                 try {
                     listUser(request, response);
@@ -132,6 +139,11 @@ public class Servlet extends HttpServlet {
                 }
                 break;
         }
+    }
+
+    private void test_without_tran(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+        userDAO.insert_update_without_tran();
+
     }
 
     private void showInfo(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {

@@ -13,6 +13,8 @@ public interface IUserDAO {
     boolean updateUser(User user) throws SQLException;
     List<User> findByCountry(String country) throws SQLException;
     List<User> sort() throws SQLException;
-    public User get_user_by_id(int user_id) throws SQLException;
-    public void insert_user_store(String name, String email, String country) throws SQLException;
+    User get_user_by_id(int user_id) throws SQLException;
+    void insert_user_store(String name, String email, String country) throws SQLException;
+    void insert_update_without_tran() throws SQLException;
+
 }

@@ -6,7 +6,10 @@ import model.User;
 
 import javax.sound.midi.Soundbank;
 import javax.swing.plaf.basic.BasicOptionPaneUI;
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,26 @@ public class UserDAO implements IUserDAO {
     private static final String INSERT_USER = "call insert_user(?,?,?)";
     private static final String selectAll = "call selectAll()";
     private static final String UPDATE_USER_PRO = "call update_user(?,?,?,?)";
+    private static final String SQL_TABLE_CREATE = "CREATE TABLE EMPLOYEE"
+
+            + "("
+
+            + " ID serial,"
+
+            + " NAME varchar(100) NOT NULL,"
+
+            + " SALARY numeric(15, 2) NOT NULL,"
+
+            + " CREATED_DATE timestamp,"
+
+            + " PRIMARY KEY (ID)"
+
+            + ")";
+    private static final String SQL_TABLE_DROP = "DROP TABLE IF EXISTS EMPLOYEE";
+    private static final String SQL_INSERT = "INSERT INTO EMPLOYEE (NAME, SALARY, CREATED_DATE) VALUES (?,?,?)";
+
+    private static final String SQL_UPDATE = "UPDATE EMPLOYEE SET SALARY=? WHERE NAME=?";
+
 
 
     protected Connection getConnection() {
@@ -203,6 +226,31 @@ public class UserDAO implements IUserDAO {
         statement.setString(3,country);
 
         statement.executeUpdate();
+    }
+
+    @Override
+    public void insert_update_without_tran() throws SQLException{
+        Connection connection = getConnection();
+        Statement statement = connection.createStatement();
+        PreparedStatement psInsert = (PreparedStatement) connection.prepareStatement(SQL_INSERT);
+        PreparedStatement psUpdate = (PreparedStatement) connection.prepareStatement(SQL_UPDATE);
+
+        statement.execute(SQL_TABLE_DROP);
+        statement.execute(SQL_TABLE_CREATE);
+
+        psInsert.setString(1,"Tuấn");
+        psInsert.setBigDecimal(2,new BigDecimal(10));
+        psInsert.setTimestamp(3,Timestamp.valueOf(LocalDateTime.now()));
+        psInsert.execute();
+        psInsert.setString(1,"Trump");
+        psInsert.setBigDecimal(2,new BigDecimal(9));
+        psInsert.setTimestamp(3,Timestamp.valueOf(LocalDateTime.now()));
+        psInsert.execute();
+
+        psUpdate.setString(2,"Tuấn");
+        psUpdate.execute();
+
+
     }
 
     private void printSQLException(SQLException ex) {
