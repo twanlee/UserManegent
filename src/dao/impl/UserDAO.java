@@ -299,6 +299,56 @@ public class UserDAO implements IUserDAO {
         }
     }
 
+    @Override
+    public void addUserTransaction(User user, int[] permissions) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        PreparedStatement stAssignment = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection();
+            connection.setAutoCommit(false);
+            statement = (PreparedStatement) connection.prepareStatement(INSERT_USER_SQL, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getCountry());
+            int rowUpdated = statement.executeUpdate();
+            resultSet = statement.getGeneratedKeys();
+            int user_id = 0;
+            if (resultSet.next()) {
+                user_id = resultSet.getInt(1);
+            }
+            if (rowUpdated == 1) {
+                String sqlPivot = "insert into user_permission(permission_id,user_id)" + "value(?,?)";
+                stAssignment = (PreparedStatement) connection.prepareStatement(sqlPivot);
+                for (int permissionId : permissions) {
+                    stAssignment.setInt(1, user_id);
+                    stAssignment.setInt(2, permissionId);
+                    stAssignment.executeUpdate();
+                }
+                connection.commit();
+            }else {
+                connection.rollback();
+            }
+        }catch (SQLException e){
+            try {
+                if(connection!=null)
+                    connection.rollback();
+            }catch (SQLException ex){
+                System.out.println(ex.getMessage());
+            }
+        }finally {
+            try {
+                if(resultSet!=null) resultSet.close();
+                if(statement!=null) statement.close();
+                if(stAssignment != null) stAssignment.close();
+                if(connection!=null) connection.close();
+            }catch (SQLException e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
 
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {

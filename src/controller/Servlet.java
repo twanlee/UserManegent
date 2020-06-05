@@ -139,6 +139,13 @@ public class Servlet extends HttpServlet {
                     e.printStackTrace();
                 }
                 break;
+            case "permision":
+                try {
+                    addUserPermission(request,response);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
             default:
                 try {
                     listUser(request, response);
@@ -147,6 +154,12 @@ public class Servlet extends HttpServlet {
                 }
                 break;
         }
+    }
+
+    private void addUserPermission(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+        User user = new User("Boss","Boss@gmail.com","Việt name");
+        int[] permission = {1,2,3,4};
+        userDAO.addUserTransaction(user,permission);
     }
 
     private void testUseTran(HttpServletRequest request, HttpServletResponse response) throws SQLException {
