@@ -1,29 +1,19 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 6/4/2020
-  Time: 10:58 AM
+  Time: 5:39 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>List users</title>
-    <style>
-        tr {
-            color: white;
-        }
-    </style>
+    <title>Show Country</title>
 </head>
-<body style="background-color:black;">
-<h1 style="color: pink" align="center">Users Management</h1>
-<h2 align="center" style="color: blueviolet">
-    <a href="/users?action=create">Add New User</a>
-    <a href="/users?action=findByCountry">Find by Country</a>
-    <a href="/users?action=sortByName">Sort by Name</a>
-
-</h2>
+<body>
+<h1>List by Country</h1>
+<a href="/users">Back to List</a>
 <div align="center">
     <table border="1">
         <tr>
@@ -35,7 +25,7 @@
         </tr>
         <c:forEach items="${users}" var="user">
             <tr>
-                <td><a href="/users?action=info&id=${user.getId()}">${user.getId()}</a></td>
+                <td><c:out value="${user.getId()}"></c:out></td>
                 <td><c:out value="${user.getName()}"></c:out></td>
                 <td><c:out value="${user.getEmail()}"></c:out></td>
                 <td><c:out value="${user.getCountry()}"></c:out></td>
